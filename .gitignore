@@ -27,3 +27,25 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# Directorios de IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Archivos compilados
+*.class
+*.jar
+*.war
+
+# Directorios de compilación
+/bin/
+/out/
+target/
+build/
+
+# Dependencias descargadas
+/.mvn/
+/.gradle/
+/.settings/
