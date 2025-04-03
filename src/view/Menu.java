@@ -15,39 +15,47 @@ public class Menu {
         this.citaController = new CitaController(citaService);
     }
 
-    public void mostrarMenu(Doctor doctor1, Doctor doctor2, Paciente paciente1, Paciente paciente2) {
+    public void mostrarMenu() {
         int option;
         do {
             System.out.println("\n--- Sistema de Citas Médicas ---");
-            System.out.println("1. Agendar cita");
-            System.out.println("2. Listar citas");
-            System.out.println("3. Ver citas por doctor");
-            System.out.println("4. Cancelar cita");
-            System.out.println("5. Salir");
+            System.out.println("1. Agregar Doctor");
+            System.out.println("2. Agregar Paciente");
+            System.out.println("3. Agendar Cita");
+            System.out.println("4. Listar Citas");
+            System.out.println("5. Ver Citas por Doctor");
+            System.out.println("6. Cancelar Cita");
+            System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
             option = scanner.nextInt();
-            scanner.nextLine(); // Consumir el salto de línea
+            scanner.nextLine();
 
             switch (option) {
                 case 1:
-                    citaController.agendarCita(doctor1, doctor2, paciente1, paciente2);
+                    citaController.agregarDoctor();
                     break;
                 case 2:
-                    citaController.listarCitas();
+                    citaController.agregarPaciente();
                     break;
                 case 3:
-                    citaController.verCitasPorDoctor();
+                    citaController.agendarCita();
                     break;
                 case 4:
-                    citaController.cancelarCita();
+                    citaController.listarCitas();
                     break;
                 case 5:
+                    citaController.verCitasPorDoctor();
+                    break;
+                case 6:
+                    citaController.cancelarCita();
+                    break;
+                case 7:
                     System.out.println("Saliendo del sistema...");
                     break;
                 default:
                     System.out.println("Opción no válida. Intente nuevamente.");
             }
-        } while (option != 5);
+        } while (option != 7);
 
         scanner.close();
     }
