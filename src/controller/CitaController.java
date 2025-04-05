@@ -5,10 +5,11 @@ import model.Doctor;
 import model.Paciente;
 import service.CitaService;
 import view.GenerateCode;
+import view.Utils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +26,6 @@ public class CitaController {
         this.scanner = new Scanner(System.in);
     }
 
-    // Función para agendar cita sin datos quemados
     public void agendarCita() {
         if (doctores.isEmpty()) {
             System.out.println("⚠️ No hay doctores registrados. Agregue uno primero.");
@@ -62,10 +62,23 @@ public class CitaController {
         }
         Doctor doctorSeleccionado = doctores.get(doctorIndex);
 
-        System.out.print("Ingrese la fecha de la cita (dd/MM/yyyy): ");
-        String fechaStr = scanner.nextLine();
-        System.out.print("Ingrese la hora de la cita (ejemplo: 10:00 AM): ");
-        String hora = scanner.nextLine();
+        String fechaStr;
+        do {
+            System.out.print("Ingrese la fecha de la cita (dd/MM/yyyy): ");
+            fechaStr = scanner.nextLine();
+            if (!Utils.isValidDate(fechaStr)) {
+                System.out.println("❌ Fecha no válida. Debe ser anterior a hoy. Formato correcto: dd/MM/yyyy.");
+            }
+        } while (!Utils.isValidDate(fechaStr));
+
+        String hora;
+        do {
+            System.out.print("Ingrese la hora de la cita (ejemplo: 10:00 AM): ");
+            hora = scanner.nextLine();
+            if (!Utils.isValidTime(hora)) {
+                System.out.println("❌ Hora no válida. Use el formato 10:00 AM.");
+            }
+        } while (!Utils.isValidTime(hora));
 
         try {
             Date fecha = new SimpleDateFormat("dd/MM/yyyy").parse(fechaStr);
@@ -76,7 +89,6 @@ public class CitaController {
         }
     }
 
-    // Función para listar citas
     public void listarCitas() {
         System.out.println("\n--- Citas Registradas ---");
         List<Cita> citas = citaService.listarCitas();
@@ -87,7 +99,6 @@ public class CitaController {
         }
     }
 
-    // Función para ver citas por doctor
     public void verCitasPorDoctor() {
         System.out.print("Ingrese el código del doctor: ");
         String codigoDoctor = scanner.nextLine();
@@ -100,7 +111,6 @@ public class CitaController {
         }
     }
 
-    // Función para cancelar cita
     public void cancelarCita() {
         System.out.print("Ingrese el ID de la cita a cancelar: ");
         int citaId = scanner.nextInt();
@@ -112,7 +122,6 @@ public class CitaController {
         }
     }
 
-    // Función para agregar un nuevo doctor
     public void agregarDoctor() {
         System.out.println("\n--- Agregar Nuevo Doctor ---");
 
@@ -125,21 +134,24 @@ public class CitaController {
         System.out.print("DUI: ");
         String dui = scanner.nextLine();
 
-        System.out.print("Fecha de Reclutamiento (YYYY-MM-DD): ");
-        String fechaReclutamiento = scanner.nextLine();
+        String fechaReclutamiento;
+        do {
+            System.out.print("Fecha de Reclutamiento (YYYY-MM-DD): ");
+            fechaReclutamiento = scanner.nextLine();
+            if (!Utils.isValidDate(fechaReclutamiento) || !isDateValid(fechaReclutamiento)) {
+                System.out.println("❌ Fecha de reclutamiento no válida. Debe ser igual o anterior a hoy.");
+            }
+        } while (!Utils.isValidDate(fechaReclutamiento) || !isDateValid(fechaReclutamiento));
 
         System.out.print("Especialidad: ");
         String especialidad = scanner.nextLine();
 
         String codigo = new GenerateCode().generarCodigo();
-
         Doctor nuevoDoctor = new Doctor(nombre, apellido, dui, fechaReclutamiento, especialidad, codigo);
         doctores.add(nuevoDoctor);
-
         System.out.println("✅ Doctor agregado con éxito. Código asignado: " + codigo);
     }
 
-    // Función para agregar un nuevo paciente
     public void agregarPaciente() {
         System.out.println("\n--- Agregar Nuevo Paciente ---");
 
@@ -149,27 +161,54 @@ public class CitaController {
         System.out.print("Apellido: ");
         String apellido = scanner.nextLine();
 
-        System.out.print("Fecha de Nacimiento (YYYY-MM-DD): ");
-        String fechaNacimiento = scanner.nextLine();
+        String fechaNacimiento;
+        do {
+            System.out.print("Fecha de Nacimiento (YYYY-MM-DD): ");
+            fechaNacimiento = scanner.nextLine();
+            if (!Utils.isValidDate(fechaNacimiento) || !isDateValid(fechaNacimiento)) {
+                System.out.println("❌ Fecha de nacimiento no válida. Debe ser igual o anterior a hoy.");
+            }
+        } while (!Utils.isValidDate(fechaNacimiento) || !isDateValid(fechaNacimiento));
 
         int edad = calcularEdad(fechaNacimiento);
         String dui = (edad < 18) ? "00000000-0" : pedirDUI();
 
         Paciente nuevoPaciente = new Paciente(nombre, apellido, dui, fechaNacimiento);
         pacientes.add(nuevoPaciente);
-
         System.out.println("✅ Paciente agregado con éxito.");
+    }
+
+    private boolean isDateValid(String dateStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false); // Formato estricto
+            Date inputDate = sdf.parse(dateStr);
+
+            // Obtener la fecha actual sin la hora
+            Date today = new Date();
+            today = sdf.parse(sdf.format(today)); // Resetea la hora a 00:00:00
+
+            return !inputDate.after(today); // Verifica si la fecha ingresada es anterior o igual a hoy
+        } catch (Exception e) {
+            return false; // Fecha no válida
+        }
+    }
+
+    private int calcularEdad(String fechaNacimiento) {
+        try {
+            Date birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento);
+            int birthYear = birthDate.getYear() + 1900; // Ajuste para obtener año correcto
+            int currentYear = java.time.Year.now().getValue();
+            return currentYear - birthYear;
+        } catch (Exception e) {
+            System.out.println("❌ Error al calcular la edad: " + e.getMessage());
+            return 0; // Si hay un error, devuelve 0
+        }
     }
 
     private String pedirDUI() {
         System.out.print("DUI: ");
         return scanner.nextLine();
-    }
-
-    private int calcularEdad(String fechaNacimiento) {
-        int añoNacimiento = Integer.parseInt(fechaNacimiento.substring(0, 4));
-        int añoActual = java.time.Year.now().getValue();
-        return añoActual - añoNacimiento;
     }
 
     public List<Doctor> getDoctores() {

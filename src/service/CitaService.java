@@ -19,7 +19,6 @@ public class CitaService {
         return citaRepository.findAll();
     }
 
-    // Método para agendar nuevas citas
     public void agendarCita(Date fecha, String hora, Paciente paciente, Doctor doctor, String especialidad) {
         Cita nuevaCita = new Cita(fecha, hora, paciente, doctor, especialidad);
         citaRepository.save(nuevaCita);

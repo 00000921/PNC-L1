@@ -17,7 +17,7 @@ public class Cita {
         this.paciente = paciente;
         this.doctor = doctor;
         this.especialidad = especialidad;
-        this.llego = false; // Por defecto, se asume que el paciente no ha llegado
+        this.llego = false;
     }
 
     // Getters y Setters

@@ -1,8 +1,6 @@
 package view;
 
 import controller.CitaController;
-import model.Doctor;
-import model.Paciente;
 import service.CitaService;
 
 import java.util.Scanner;
