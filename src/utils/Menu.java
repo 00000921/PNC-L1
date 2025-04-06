@@ -3,6 +3,7 @@ package utils;
 import controller.CitaController;
 import service.CitaService;
 
+
 import java.util.Scanner;
 
 public class Menu {
@@ -24,7 +25,7 @@ public class Menu {
             System.out.println("3. Agendar Cita");
             System.out.println("4. Listar Citas");
             System.out.println("5. Ver Citas por Doctor");
-            System.out.println("6. Cancelar Cita");
+            System.out.println("6. Administrar Citas");
             System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
 
@@ -47,7 +48,30 @@ public class Menu {
                         citaController.verCitasPorDoctor();
                         break;
                     case 6:
-                        citaController.cancelarCita();
+                        System.out.println("Elija una opción");
+                        int optCita = 0;
+                        boolean regresar = false;
+                        do {
+                            try {
+                                System.out.println("1. Marcar Llegada");
+                                System.out.println("2. Cancelar Cita");
+                                System.out.println("3. Regresar");
+                                optCita = Integer.parseInt(scanner.nextLine());
+                                switch (optCita) {
+                                    case 1:
+                                        Utils.marcarLlegada(citaController);
+                                        break;
+                                    case 2:
+                                        citaController.cancelarCita();
+                                        break;
+                                    case 3:
+                                        regresar = true;
+                                        break;
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Por favor digite opción 1 o 2");
+                            }
+                        } while (!regresar);
                         break;
                     case 7:
                         System.out.println("Saliendo del sistema...");

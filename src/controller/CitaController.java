@@ -8,10 +8,7 @@ import utils.GenerateCode;
 import utils.Utils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class CitaController {
     private CitaService citaService;
@@ -102,7 +99,7 @@ public class CitaController {
     }
 
 
-    public void listarCitas() {
+    public List<Cita> listarCitas() {
         System.out.println("\n--- Citas Registradas ---");
         List<Cita> citas = citaService.listarCitas();
         if (citas.isEmpty()) {
@@ -114,36 +111,65 @@ public class CitaController {
                 System.out.println("Doctor: " + cita.getDoctor().getNombre());
                 System.out.println("Fecha: " + cita.getFecha());
                 System.out.println("Hora: " + cita.getHora());
-                System.out.println("Estado: (HACE FALTA AGREGAR)");
+                System.out.println("Estado: " + (cita.isLlego() ? "Confirmada" : "Pendiente"));
                 System.out.println("---------------------------------");
             }
         }
+        return citas;
     }
 
 
     public void verCitasPorDoctor() {
         System.out.print("Ingrese el código del doctor: ");
         String codigoDoctor = scanner.nextLine();
+
+        // Buscar el doctor con el código
+        Doctor doctorEncontrado = null;
+        for (Doctor doc : doctores) {
+            if (doc.getCodigo().equalsIgnoreCase(codigoDoctor)) {
+                doctorEncontrado = doc;
+                break;
+            }
+        }
+
+        if (doctorEncontrado == null) {
+            System.out.println("❌ No se encontró un doctor con ese código.");
+            return;
+        }
+
         List<Cita> citas = citaService.getCitasByDoctor(codigoDoctor);
         if (citas.isEmpty()) {
             System.out.println("⚠️ No hay citas asignadas a este doctor.");
         } else {
-            System.out.println("\n--- Citas del Doctor " + codigoDoctor + " ---");
+            System.out.println("\n--- Citas del Doctor " + doctorEncontrado.getNombre() + " " + doctorEncontrado.getApellido() + " ---");
             for (Cita cita : citas) {
                 System.out.println("Cita ID: " + cita.getId());
-                System.out.println("Paciente: " + cita.getPaciente().getNombre());
                 System.out.println("Fecha: " + cita.getFecha());
+                System.out.println("Especialidad: " + cita.getEspecialidad());
+                System.out.println("Doctor Encargado: " + cita.getDoctor().getNombre());
+                System.out.println("Paciente: " + cita.getPaciente().getNombre());
                 System.out.println("Hora: " + cita.getHora());
-                System.out.println("Estado: (HACE FALTA AGREGAR)" );
+                System.out.println("Estado: " + (cita.isLlego() ? "Confirmada" : "Pendiente"));
                 System.out.println("---------------------------------");
             }
         }
     }
 
     public void cancelarCita() {
-        System.out.print("Ingrese el ID de la cita a cancelar: ");
-        int citaId = scanner.nextInt();
-        scanner.nextLine();
+        int citaId = -1;
+
+        while (true) {
+            try {
+                System.out.print("Ingrese el ID de la cita a cancelar: ");
+                citaId = scanner.nextInt();
+                scanner.nextLine();
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("❌ Entrada no válida. Debe ingresar un número.");
+                scanner.nextLine();
+            }
+        }
+
         if (citaService.cancelarCita(citaId)) {
             System.out.println("✅ Cita cancelada con éxito.");
         } else {
@@ -228,6 +254,11 @@ public class CitaController {
             }
         } while (!Utils.validarDUI(dui));
         return dui;
+    }
+
+    //Para marcar Cita como confirmada
+    public Scanner getScanner() {
+        return scanner;
     }
 
     public List<Doctor> getDoctores() {
