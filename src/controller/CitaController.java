@@ -55,7 +55,7 @@ public class CitaController {
         int doctorIndex = -1;
         System.out.println("\n--- Seleccione un Doctor ---");
         for (int i = 0; i < doctores.size(); i++) {
-            System.out.println((i + 1) + ". " + doctores.get(i).getNombre() + " " + doctores.get(i).getApellido() + " - " + doctores.get(i).getEspecialidad());
+            System.out.println((i + 1) + ". " + doctores.get(i).getNombre() + " " + doctores.get(i).getApellido() + " - " + doctores.get(i).getEspecialidad() + " - " + doctores.get(i).getCodigo());
         }
 
         while (true) {

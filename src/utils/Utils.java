@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class Utils {
 
@@ -24,18 +23,18 @@ public class Utils {
 
             return !inputDate.after(today); // Verifica si la fecha ingresada es anterior o igual a hoy
         } catch (Exception e) {
-            return false; // Fecha no válida
+            return false;
         }
     }
 
     public static boolean isValidFormat(String dateStr) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false); // Para que sea estricto
+            sdf.setLenient(false);
             sdf.parse(dateStr);
-            return true; // La fecha es válida
+            return true;
         } catch (ParseException e) {
-            return false; // No se pudo parsear, la fecha es inválida
+            return false;
         }
     }
 
@@ -55,11 +54,12 @@ public class Utils {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             sdf.setLenient(false);
+
             Date fechaIngresada = sdf.parse(dateStr);
 
-            Date hoy = sdf.parse(sdf.format(new Date()));
+            Date ahora = new Date(); // Fecha y hora actual
 
-            return fechaIngresada.after(hoy); // Debe ser mayor a fecha actual
+            return !fechaIngresada.before(ahora); // Verifica si la fecha y hora ingresada es mayor o igual a la actual
         } catch (ParseException e) {
             return false;
         }
