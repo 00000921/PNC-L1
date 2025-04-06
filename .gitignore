@@ -49,3 +49,6 @@ build/
 /.mvn/
 /.gradle/
 /.settings/
+
+#ignorar las lib
+/lib/*
