@@ -19,5 +19,26 @@
     },
     "especialidad": "Oculista",
     "llego": false
+  },
+  {
+    "id": 1,
+    "fecha": "Jul 7, 2025, 12:00:00 AM",
+    "hora": "03:00 PM",
+    "paciente": {
+      "fechaNacimiento": "2008-03-05",
+      "nombre": "Elia",
+      "apellido": "Gome",
+      "dui": "00000000-0"
+    },
+    "doctor": {
+      "fechaReclutamiento": "2024-06-02",
+      "especialidad": "Asistente",
+      "codigo": "ZNH-7Q2-MD-5N",
+      "nombre": "Jose",
+      "apellido": "Martinez",
+      "dui": "12345698-0"
+    },
+    "especialidad": "Asistente",
+    "llego": false
   }
 ]

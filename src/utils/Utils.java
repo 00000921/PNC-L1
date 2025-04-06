@@ -14,14 +14,11 @@ public class Utils {
     public static boolean isDateValid(String dateStr) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false); // Formato estricto
+            sdf.setLenient(false);
             Date inputDate = sdf.parse(dateStr);
+            Date today = new Date(); // Fecha y hora actual
 
-            // Obtener la fecha actual sin la hora
-            Date today = new Date();
-            today = sdf.parse(sdf.format(today)); // Resetea la hora a 00:00:00
-
-            return !inputDate.after(today); // Verifica si la fecha ingresada es anterior o igual a hoy
+            return !inputDate.after(today);
         } catch (Exception e) {
             return false;
         }
@@ -49,17 +46,14 @@ public class Utils {
         }
     }
 
-
     public static boolean isFutureDate(String dateStr) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             sdf.setLenient(false);
-
             Date fechaIngresada = sdf.parse(dateStr);
-
             Date ahora = new Date(); // Fecha y hora actual
 
-            return !fechaIngresada.before(ahora); // Verifica si la fecha y hora ingresada es mayor o igual a la actual
+            return !fechaIngresada.before(ahora);
         } catch (ParseException e) {
             return false;
         }
@@ -69,10 +63,8 @@ public class Utils {
         return dui.matches("^\\d{8}-\\d$");
     }
 
-
-
     public static void marcarLlegada(CitaController citaController) {
-        List<Cita> citas = citaController.listarCitas(); // Ya imprime citas también
+        List<Cita> citas = citaController.listarCitas();
 
         if (citas.isEmpty()) {
             return;
@@ -97,7 +89,4 @@ public class Utils {
 
         System.out.println("❌ No se encontró una cita con ese ID.");
     }
-
-
-
 }

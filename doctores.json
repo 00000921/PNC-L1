@@ -6,5 +6,29 @@
     "nombre": "Jose",
     "apellido": "Menjivar",
     "dui": "12345678-9"
+  },
+  {
+    "fechaReclutamiento": "2024-06-02",
+    "especialidad": "Asistente",
+    "codigo": "ZNH-7Q2-MD-5N",
+    "nombre": "Jose",
+    "apellido": "Martinez",
+    "dui": "12345698-0"
+  },
+  {
+    "fechaReclutamiento": "2023-02-02",
+    "especialidad": "Doctor",
+    "codigo": "ZNH-9F0-MD-7U",
+    "nombre": "Julio",
+    "apellido": "Bailon",
+    "dui": "98765432-1"
+  },
+  {
+    "fechaReclutamiento": "2024-01-01",
+    "especialidad": "Jubilador",
+    "codigo": "ZNH-4W9-MD-5O",
+    "nombre": "Juan",
+    "apellido": "Menjivar",
+    "dui": "12345679-1"
   }
 ]

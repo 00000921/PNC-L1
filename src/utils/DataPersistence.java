@@ -1,7 +1,7 @@
 package utils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder; // Importar GsonBuilder
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import model.Cita;
 import model.Doctor;
@@ -17,7 +17,6 @@ public class DataPersistence {
     private static final String PACIENTES_FILE = "pacientes.json";
     private static final String CITAS_FILE = "citas.json";
 
-    // Usar GsonBuilder para formateo
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public void guardarDoctores(List<Doctor> doctores) {

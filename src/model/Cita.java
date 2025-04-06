@@ -83,8 +83,8 @@ public class Cita {
                 "id=" + id +
                 ", fecha=" + fecha +
                 ", hora='" + hora + '\'' +
-                ", paciente=" + paciente +
-                ", doctor=" + doctor +
+                ", paciente=" + paciente.getNombre() + " " + paciente.getApellido() +
+                ", doctor=" + doctor.getNombre() + " " + doctor.getApellido() +
                 ", especialidad='" + especialidad + '\'' +
                 ", llego=" + llego +
                 '}';

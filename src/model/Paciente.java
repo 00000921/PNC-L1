@@ -8,7 +8,7 @@ public class Paciente extends Usuario {
     private String fechaNacimiento;
 
     public Paciente(String nombre, String apellido, String dui, String fechaNacimiento) {
-        super(nombre, apellido, calcularDui(fechaNacimiento));
+        super(nombre, apellido, dui);
         this.fechaNacimiento = fechaNacimiento;
     }
 
@@ -25,8 +25,7 @@ public class Paciente extends Usuario {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate fechaNac = LocalDate.parse(fechaNacimiento, formatter);
         int edad = Period.between(fechaNac, LocalDate.now()).getYears();
-
-        return (edad < 18) ? "00000000-0" : ""; // Operador ternario para verificar si está bicho o no
+        return (edad < 18) ? "00000000-0" : ""; // Operador ternario para verificar edad
     }
 
     @Override

@@ -17,15 +17,23 @@ public class CitaController {
     private List<Paciente> pacientes;
     private List<Cita> citas;
     private Scanner scanner;
-    private DataPersistence dataPersistence; // Instancia de DataPersistence
+    private DataPersistence dataPersistence;
 
     public CitaController(CitaService citaService) {
         this.citaService = citaService;
-        this.dataPersistence = new DataPersistence(); // Inicializa DataPersistence
-        this.doctores = dataPersistence.cargarDoctores(); // Carga doctores
-        this.pacientes = dataPersistence.cargarPacientes(); // Carga pacientes
-        this.citas = dataPersistence.cargarCitas(); // Carga citas
+        this.dataPersistence = new DataPersistence();
+        this.doctores = dataPersistence.cargarDoctores();
+        this.pacientes = dataPersistence.cargarPacientes();
+        this.citas = dataPersistence.cargarCitas();
         this.scanner = new Scanner(System.in);
+    }
+
+    public Scanner getScanner() {
+        return scanner;
+    }
+
+    private int generarIdCita() {
+        return citas.size() + 1;
     }
 
     public void agendarCita() {
@@ -38,27 +46,19 @@ public class CitaController {
             return;
         }
 
-        // Seleccionar paciente
         int pacienteIndex = seleccionarPaciente();
         if (pacienteIndex == -1) return;
 
         Paciente pacienteSeleccionado = pacientes.get(pacienteIndex);
-
-        // Seleccionar doctor
         int doctorIndex = seleccionarDoctor();
         if (doctorIndex == -1) return;
 
         Doctor doctorSeleccionado = doctores.get(doctorIndex);
-
-        // Solicitar fecha
         String fechaStr = solicitarFecha();
         if (fechaStr == null) return;
-
-        // Solicitar hora
         String hora = solicitarHora();
         if (hora == null) return;
 
-        // Verificar disponibilidad del doctor
         try {
             Date fecha = new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
             if (!citaService.verificarDisponibilidad(doctorSeleccionado, fecha, hora)) {
@@ -66,8 +66,9 @@ public class CitaController {
                 return;
             }
             Cita nuevaCita = new Cita(fecha, hora, pacienteSeleccionado, doctorSeleccionado, doctorSeleccionado.getEspecialidad());
+            nuevaCita.setId(generarIdCita());
             citas.add(nuevaCita);
-            dataPersistence.guardarCitas(citas); // Guardar citas después de agregar
+            dataPersistence.guardarCitas(citas);
             System.out.println("✅ Cita agendada con éxito.");
         } catch (Exception e) {
             System.out.println("❌ Error al agendar la cita: " + e.getMessage());
@@ -85,8 +86,10 @@ public class CitaController {
             System.out.print("Seleccione el paciente: ");
             try {
                 pacienteIndex = Integer.parseInt(scanner.nextLine()) - 1;
-                if (pacienteIndex >= 0 && pacienteIndex < pacientes.size()) break;
-                else System.out.println("❌ Opción inválida. Intente nuevamente.");
+                if (pacienteIndex >= 0 && pacienteIndex < pacientes.size())
+                    break;
+                else
+                    System.out.println("❌ Opción inválida. Intente nuevamente.");
             } catch (NumberFormatException e) {
                 System.out.println("❌ Entrada no válida. Por favor, ingrese un número.");
             }
@@ -105,8 +108,10 @@ public class CitaController {
             System.out.print("Seleccione el doctor: ");
             try {
                 doctorIndex = Integer.parseInt(scanner.nextLine()) - 1;
-                if (doctorIndex >= 0 && doctorIndex < doctores.size()) break;
-                else System.out.println("❌ Opción inválida. Intente nuevamente.");
+                if (doctorIndex >= 0 && doctorIndex < doctores.size())
+                    break;
+                else
+                    System.out.println("❌ Opción inválida. Intente nuevamente.");
             } catch (NumberFormatException e) {
                 System.out.println("❌ Entrada no válida. Por favor, ingrese un número.");
             }
@@ -139,41 +144,47 @@ public class CitaController {
     }
 
     public void cancelarCita() {
+        listarCitas(); // Listar citas antes de cancelar
         int citaId = -1;
 
         while (true) {
             try {
                 System.out.print("Ingrese el ID de la cita a cancelar: ");
-                citaId = scanner.nextInt();
-                scanner.nextLine();
+                citaId = scanner.nextInt(); // Obtener el ID
+                scanner.nextLine(); // Limpiar entrada
+                final int idToRemove = citaId; // Variable final
+                if (citaService.eliminarCita(citaId)) {
+                    citas.removeIf(cita -> cita.getId() == idToRemove); // Usar la variable final
+                    dataPersistence.guardarCitas(citas); // Guardar cambios
+                    System.out.println("✅ Cita eliminada con éxito.");
+                } else {
+                    System.out.println("❌ No se encontró la cita para eliminar.");
+                }
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("❌ Entrada no válida. Debe ingresar un número.");
-                scanner.nextLine();
+                scanner.nextLine(); // Limpiar la entrada incorrecta
             }
-        }
-
-        if (citaService.eliminarCita(citaId)) {
-            System.out.println("✅ Cita eliminada con éxito.");
-        } else {
-            System.out.println("❌ No se encontró la cita para eliminar.");
         }
     }
 
     public List<Cita> listarCitas() {
         System.out.println("\n--- Citas Registradas ---");
-        List<Cita> citas = citaService.listarCitas();
+        citas = dataPersistence.cargarCitas();
+
         if (citas.isEmpty()) {
             System.out.println("⚠️ No hay citas registradas.");
         } else {
+            System.out.printf("%-5s %-20s %-10s %-20s %-20s\n", "ID", "Fecha", "Hora", "Paciente", "Doctor");
+            System.out.println("-".repeat(70));
+
             for (Cita cita : citas) {
-                System.out.println("Cita ID: " + cita.getId());
-                System.out.println("Paciente: " + cita.getPaciente().getNombre());
-                System.out.println("Doctor: " + cita.getDoctor().getNombre());
-                System.out.println("Fecha: " + cita.getFecha());
-                System.out.println("Hora: " + cita.getHora());
-                System.out.println("Estado: " + (cita.isLlego() ? "Confirmada" : "Pendiente"));
-                System.out.println("---------------------------------");
+                System.out.printf("%-5s %-20s %-10s %-20s %-20s\n",
+                        cita.getId(),
+                        new SimpleDateFormat("yyyy-MM-dd").format(cita.getFecha()),
+                        cita.getHora(),
+                        cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
+                        cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido());
             }
         }
         return citas;
@@ -183,7 +194,6 @@ public class CitaController {
         System.out.print("Ingrese el código del doctor: ");
         String codigoDoctor = scanner.nextLine();
 
-        // Buscar el doctor con el código
         Doctor doctorEncontrado = null;
         for (Doctor doc : doctores) {
             if (doc.getCodigo().equalsIgnoreCase(codigoDoctor)) {
@@ -203,14 +213,7 @@ public class CitaController {
         } else {
             System.out.println("\n--- Citas del Doctor " + doctorEncontrado.getNombre() + " " + doctorEncontrado.getApellido() + " ---");
             for (Cita cita : citas) {
-                System.out.println("Cita ID: " + cita.getId());
-                System.out.println("Fecha: " + cita.getFecha());
-                System.out.println("Especialidad: " + cita.getEspecialidad());
-                System.out.println("Doctor Encargado: " + cita.getDoctor().getNombre());
-                System.out.println("Paciente: " + cita.getPaciente().getNombre());
-                System.out.println("Hora: " + cita.getHora());
-                System.out.println("Estado: " + (cita.isLlego() ? "Confirmada" : "Pendiente"));
-                System.out.println("---------------------------------");
+                System.out.println(cita);
             }
         }
     }
@@ -241,7 +244,7 @@ public class CitaController {
         String codigo = new GenerateCode().generarCodigo();
         Doctor nuevoDoctor = new Doctor(nombre, apellido, dui, fechaReclutamiento, especialidad, codigo);
         doctores.add(nuevoDoctor);
-        dataPersistence.guardarDoctores(doctores);  // Guardar doctores después de agregar
+        dataPersistence.guardarDoctores(doctores);
         System.out.println("✅ Doctor agregado con éxito. Código asignado: " + codigo);
     }
 
@@ -263,25 +266,15 @@ public class CitaController {
             }
         } while (!Utils.isValidFormat(fechaNacimiento) || !Utils.isDateValid(fechaNacimiento));
 
-        int edad = calcularEdad(fechaNacimiento);
-        String dui = (edad < 18) ? "00000000-0" : pedirDUI();
+        String dui;
+        do {
+            dui = pedirDUI(); // Validar el DUI para asegurar que sea correcto
+        } while (!Utils.validarDUI(dui));
 
         Paciente nuevoPaciente = new Paciente(nombre, apellido, dui, fechaNacimiento);
         pacientes.add(nuevoPaciente);
-        dataPersistence.guardarPacientes(pacientes);  // Guardar pacientes después de agregar
+        dataPersistence.guardarPacientes(pacientes);
         System.out.println("✅ Paciente agregado con éxito.");
-    }
-
-    private int calcularEdad(String fechaNacimiento) {
-        try {
-            Date birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(fechaNacimiento);
-            int birthYear = birthDate.getYear() + 1900; // Ajuste para obtener año correcto
-            int currentYear = java.time.Year.now().getValue();
-            return currentYear - birthYear;
-        } catch (Exception e) {
-            System.out.println("❌ Error al calcular la edad: " + e.getMessage());
-            return 0; // Si hay un error, devuelve 0
-        }
     }
 
     private String pedirDUI() {
@@ -294,17 +287,5 @@ public class CitaController {
             }
         } while (!Utils.validarDUI(dui));
         return dui;
-    }
-
-    public Scanner getScanner() {
-        return scanner;
-    }
-
-    public List<Doctor> getDoctores() {
-        return doctores;
-    }
-
-    public List<Paciente> getPacientes() {
-        return pacientes;
     }
 }

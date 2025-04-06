@@ -2,7 +2,6 @@ package utils;
 
 import controller.CitaController;
 import service.CitaService;
-
 import java.util.Scanner;
 
 public class Menu {
@@ -26,7 +25,6 @@ public class Menu {
             System.out.println("5. Ver Citas por Doctor");
             System.out.println("6. Administrar Citas");
             System.out.println("7. Salir");
-            System.out.println("8. Mundo salva vidas"); // Nueva opción
             System.out.print("Seleccione una opción: ");
 
             try {
@@ -54,16 +52,12 @@ public class Menu {
                         System.out.println("Saliendo del sistema...");
                         salir = true;
                         break;
-                    case 8:
-                        System.out.println("🦸‍♂️ Mundo salva vidas!"); // Mensaje al seleccionar esta opción
-                        break;
                     default:
                         System.out.println("Opción no válida. Intente nuevamente.");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Entrada no válida. Por favor ingrese un número del 1 al 8.");
             }
-
         } while (!salir);
 
         scanner.close();
