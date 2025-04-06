@@ -4,8 +4,8 @@ import model.Cita;
 import model.Doctor;
 import model.Paciente;
 import service.CitaService;
-import view.GenerateCode;
-import view.Utils;
+import utils.GenerateCode;
+import utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,40 +36,52 @@ public class CitaController {
             return;
         }
 
+        int pacienteIndex = -1;
         System.out.println("\n--- Seleccione un Paciente ---");
         for (int i = 0; i < pacientes.size(); i++) {
             System.out.println((i + 1) + ". " + pacientes.get(i).getNombre() + " " + pacientes.get(i).getApellido());
         }
-        System.out.print("Seleccione el paciente: ");
-        int pacienteIndex = scanner.nextInt() - 1;
-        scanner.nextLine();
-        if (pacienteIndex < 0 || pacienteIndex >= pacientes.size()) {
-            System.out.println("❌ Opción inválida.");
-            return;
+
+        while (true) {
+            System.out.print("Seleccione el paciente: ");
+            try {
+                pacienteIndex = Integer.parseInt(scanner.nextLine()) - 1;
+                if (pacienteIndex >= 0 && pacienteIndex < pacientes.size()) break;
+                else System.out.println("❌ Opción inválida. Intente nuevamente.");
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Entrada no válida. Por favor, ingrese un número.");
+            }
         }
+
         Paciente pacienteSeleccionado = pacientes.get(pacienteIndex);
 
+        int doctorIndex = -1;
         System.out.println("\n--- Seleccione un Doctor ---");
         for (int i = 0; i < doctores.size(); i++) {
             System.out.println((i + 1) + ". " + doctores.get(i).getNombre() + " " + doctores.get(i).getApellido() + " - " + doctores.get(i).getEspecialidad());
         }
-        System.out.print("Seleccione el doctor: ");
-        int doctorIndex = scanner.nextInt() - 1;
-        scanner.nextLine();
-        if (doctorIndex < 0 || doctorIndex >= doctores.size()) {
-            System.out.println("❌ Opción inválida.");
-            return;
+
+        while (true) {
+            System.out.print("Seleccione el doctor: ");
+            try {
+                doctorIndex = Integer.parseInt(scanner.nextLine()) - 1;
+                if (doctorIndex >= 0 && doctorIndex < doctores.size()) break;
+                else System.out.println("❌ Opción inválida. Intente nuevamente.");
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Entrada no válida. Por favor, ingrese un número.");
+            }
         }
+
         Doctor doctorSeleccionado = doctores.get(doctorIndex);
 
         String fechaStr;
         do {
-            System.out.print("Ingrese la fecha de la cita (dd/MM/yyyy): ");
+            System.out.print("Ingrese la fecha de la cita (yyyy-MM-dd): ");
             fechaStr = scanner.nextLine();
-            if (!Utils.isValidDate(fechaStr)) {
-                System.out.println("❌ Fecha no válida. Debe ser anterior a hoy. Formato correcto: dd/MM/yyyy.");
+            if (!Utils.isFutureDate(fechaStr)) {
+                System.out.println("❌ Fecha no válida. Debe ser mayor a hoy. Formato correcto: yyyy-MM-dd.");
             }
-        } while (!Utils.isValidDate(fechaStr));
+        } while (!Utils.isFutureDate(fechaStr));
 
         String hora;
         do {
@@ -81,7 +93,7 @@ public class CitaController {
         } while (!Utils.isValidTime(hora));
 
         try {
-            Date fecha = new SimpleDateFormat("dd/MM/yyyy").parse(fechaStr);
+            Date fecha = new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
             citaService.agendarCita(fecha, hora, pacienteSeleccionado, doctorSeleccionado, doctorSeleccionado.getEspecialidad());
             System.out.println("✅ Cita agendada con éxito.");
         } catch (Exception e) {
@@ -89,15 +101,25 @@ public class CitaController {
         }
     }
 
+
     public void listarCitas() {
         System.out.println("\n--- Citas Registradas ---");
         List<Cita> citas = citaService.listarCitas();
         if (citas.isEmpty()) {
             System.out.println("⚠️ No hay citas registradas.");
         } else {
-            citas.forEach(System.out::println);
+            for (Cita cita : citas) {
+                System.out.println("Cita ID: " + cita.getId());
+                System.out.println("Paciente: " + cita.getPaciente().getNombre());
+                System.out.println("Doctor: " + cita.getDoctor().getNombre());
+                System.out.println("Fecha: " + cita.getFecha());
+                System.out.println("Hora: " + cita.getHora());
+                System.out.println("Estado: (HACE FALTA AGREGAR)");
+                System.out.println("---------------------------------");
+            }
         }
     }
+
 
     public void verCitasPorDoctor() {
         System.out.print("Ingrese el código del doctor: ");
@@ -107,7 +129,14 @@ public class CitaController {
             System.out.println("⚠️ No hay citas asignadas a este doctor.");
         } else {
             System.out.println("\n--- Citas del Doctor " + codigoDoctor + " ---");
-            citas.forEach(System.out::println);
+            for (Cita cita : citas) {
+                System.out.println("Cita ID: " + cita.getId());
+                System.out.println("Paciente: " + cita.getPaciente().getNombre());
+                System.out.println("Fecha: " + cita.getFecha());
+                System.out.println("Hora: " + cita.getHora());
+                System.out.println("Estado: (HACE FALTA AGREGAR)" );
+                System.out.println("---------------------------------");
+            }
         }
     }
 
@@ -131,17 +160,16 @@ public class CitaController {
         System.out.print("Apellido: ");
         String apellido = scanner.nextLine();
 
-        System.out.print("DUI: ");
-        String dui = scanner.nextLine();
+        String dui = pedirDUI();
 
         String fechaReclutamiento;
         do {
             System.out.print("Fecha de Reclutamiento (YYYY-MM-DD): ");
             fechaReclutamiento = scanner.nextLine();
-            if (!Utils.isValidDate(fechaReclutamiento) || !isDateValid(fechaReclutamiento)) {
+            if (!Utils.isValidFormat(fechaReclutamiento) || !Utils.isDateValid(fechaReclutamiento)) {
                 System.out.println("❌ Fecha de reclutamiento no válida. Debe ser igual o anterior a hoy.");
             }
-        } while (!Utils.isValidDate(fechaReclutamiento) || !isDateValid(fechaReclutamiento));
+        } while (!Utils.isValidFormat(fechaReclutamiento) || !Utils.isDateValid(fechaReclutamiento));
 
         System.out.print("Especialidad: ");
         String especialidad = scanner.nextLine();
@@ -165,10 +193,10 @@ public class CitaController {
         do {
             System.out.print("Fecha de Nacimiento (YYYY-MM-DD): ");
             fechaNacimiento = scanner.nextLine();
-            if (!Utils.isValidDate(fechaNacimiento) || !isDateValid(fechaNacimiento)) {
+            if (!Utils.isValidFormat(fechaNacimiento) || !Utils.isDateValid(fechaNacimiento)) {
                 System.out.println("❌ Fecha de nacimiento no válida. Debe ser igual o anterior a hoy.");
             }
-        } while (!Utils.isValidDate(fechaNacimiento) || !isDateValid(fechaNacimiento));
+        } while (!Utils.isValidFormat(fechaNacimiento) || !Utils.isDateValid(fechaNacimiento));
 
         int edad = calcularEdad(fechaNacimiento);
         String dui = (edad < 18) ? "00000000-0" : pedirDUI();
@@ -176,22 +204,6 @@ public class CitaController {
         Paciente nuevoPaciente = new Paciente(nombre, apellido, dui, fechaNacimiento);
         pacientes.add(nuevoPaciente);
         System.out.println("✅ Paciente agregado con éxito.");
-    }
-
-    private boolean isDateValid(String dateStr) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false); // Formato estricto
-            Date inputDate = sdf.parse(dateStr);
-
-            // Obtener la fecha actual sin la hora
-            Date today = new Date();
-            today = sdf.parse(sdf.format(today)); // Resetea la hora a 00:00:00
-
-            return !inputDate.after(today); // Verifica si la fecha ingresada es anterior o igual a hoy
-        } catch (Exception e) {
-            return false; // Fecha no válida
-        }
     }
 
     private int calcularEdad(String fechaNacimiento) {
@@ -207,8 +219,15 @@ public class CitaController {
     }
 
     private String pedirDUI() {
-        System.out.print("DUI: ");
-        return scanner.nextLine();
+        String dui;
+        do {
+            System.out.print("DUI (formato 00000000-0): ");
+            dui = scanner.nextLine();
+            if (!Utils.validarDUI(dui)) {
+                System.out.println("❌ Formato de DUI inválido. Intente nuevamente.");
+            }
+        } while (!Utils.validarDUI(dui));
+        return dui;
     }
 
     public List<Doctor> getDoctores() {
