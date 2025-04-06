@@ -1,0 +1,23 @@
+[
+  {
+    "id": 0,
+    "fecha": "Jun 6, 2025, 12:00:00 AM",
+    "hora": "08:30 AM",
+    "paciente": {
+      "fechaNacimiento": "2008-03-05",
+      "nombre": "Elia",
+      "apellido": "Gome",
+      "dui": "00000000-0"
+    },
+    "doctor": {
+      "fechaReclutamiento": "2025-02-2",
+      "especialidad": "Oculista",
+      "codigo": "ZNH-9P8-MD-3J",
+      "nombre": "Jose",
+      "apellido": "Menjivar",
+      "dui": "12345678-9"
+    },
+    "especialidad": "Oculista",
+    "llego": false
+  }
+]

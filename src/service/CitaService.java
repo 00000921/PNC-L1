@@ -24,7 +24,7 @@ public class CitaService {
         citaRepository.save(nuevaCita);
     }
 
-    public boolean cancelarCita(int citaId) {
+    public boolean eliminarCita(int citaId) {
         Cita cita = citaRepository.findById(citaId);
         if (cita != null) {
             citaRepository.delete(cita);
@@ -46,7 +46,12 @@ public class CitaService {
     }
 
     public boolean verificarDisponibilidad(Doctor doctor, Date fecha, String hora) {
-        // Implementar lógica para verificar si el doctor está disponible
-        return true; // Placeholder
+        for (Cita cita : citaRepository.findAll()) {
+            if (cita.getDoctor().getCodigo().equals(doctor.getCodigo()) &&
+                    cita.getFecha().equals(fecha) && cita.getHora().equals(hora)) {
+                return false; // El doctor ya tiene una cita a esa hora
+            }
+        }
+        return true; // El doctor está disponible
     }
 }
