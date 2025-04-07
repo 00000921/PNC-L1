@@ -40,5 +40,26 @@
     },
     "especialidad": "Asistente",
     "llego": false
+  },
+  {
+    "id": 3,
+    "fecha": "Apr 7, 2025, 12:00:00 AM",
+    "hora": "01:00 AM",
+    "paciente": {
+      "fechaNacimiento": "2001-03-03",
+      "nombre": "Julio",
+      "apellido": "Caceres",
+      "dui": "06010203-1"
+    },
+    "doctor": {
+      "fechaReclutamiento": "2023-02-02",
+      "especialidad": "Doctor",
+      "codigo": "ZNH-9F0-MD-7U",
+      "nombre": "Julio",
+      "apellido": "Bailon",
+      "dui": "98765432-1"
+    },
+    "especialidad": "Doctor",
+    "llego": false
   }
 ]
