@@ -30,5 +30,13 @@
     "nombre": "Juan",
     "apellido": "Menjivar",
     "dui": "12345679-1"
+  },
+  {
+    "fechaReclutamiento": "2022-03-08",
+    "especialidad": "Streamer",
+    "codigo": "ZNH-1P7-MD-3S",
+    "nombre": "Kelvin",
+    "apellido": "Rivas",
+    "dui": "12345678-3"
   }
 ]

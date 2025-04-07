@@ -17,7 +17,7 @@ public class DataPersistence {
     private static final String PACIENTES_FILE = "pacientes.json";
     private static final String CITAS_FILE = "citas.json";
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public void guardarDoctores(List<Doctor> doctores) {
         try (Writer writer = new FileWriter(DOCTORES_FILE)) {
@@ -59,7 +59,7 @@ public class DataPersistence {
         }
     }
 
-    public void guardarCitas(List<Cita> citas) {
+    public static void guardarCitas(List<Cita> citas) {
         try (Writer writer = new FileWriter(CITAS_FILE)) {
             gson.toJson(citas, writer);
         } catch (IOException e) {
@@ -67,7 +67,7 @@ public class DataPersistence {
         }
     }
 
-    public List<Cita> cargarCitas() {
+    public static List<Cita> cargarCitas() {
         try (Reader reader = new FileReader(CITAS_FILE)) {
             Type citaListType = new TypeToken<ArrayList<Cita>>() {}.getType();
             return gson.fromJson(reader, citaListType);

@@ -7,6 +7,7 @@ import repository.CitaRepository;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import utils.DataPersistence;
 
 public class CitaService {
     private CitaRepository citaRepository;
@@ -24,21 +25,24 @@ public class CitaService {
         citaRepository.save(nuevaCita);
     }
 
-    public boolean eliminarCita(int citaId) {
-        Cita cita = citaRepository.findById(citaId);
-        if (cita != null) {
-            citaRepository.delete(cita);
-            return true;
+    public boolean eliminarCita(int id) {
+            List<Cita> citas = DataPersistence.cargarCitas();
+            for (Cita cita : citas) {
+                if (cita.getId() == id) {
+                    citas.remove(cita);
+                    DataPersistence.guardarCitas(citas);
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
-    }
 
     public List<Cita> getCitasByDoctor(String codigoDoctor) {
-        List<Cita> todasLasCitas = citaRepository.findAll();
+        List<Cita> todasLasCitas = DataPersistence.cargarCitas();
         List<Cita> citasDoctor = new ArrayList<>();
 
         for (Cita cita : todasLasCitas) {
-            if (cita.getDoctor().getCodigo().equals(codigoDoctor)) {
+            if (cita.getDoctor().getCodigo().equalsIgnoreCase(codigoDoctor)) {
                 citasDoctor.add(cita);
             }
         }

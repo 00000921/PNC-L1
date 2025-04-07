@@ -144,8 +144,26 @@ public class CitaController {
     }
 
     public void cancelarCita() {
-        listarCitas(); // Listar citas antes de cancelar
+        System.out.println("\n--- Citas Registradas ---");
+        citas = dataPersistence.cargarCitas(); // Cargar citas desde el JSON
         int citaId = -1;
+
+        if (citas.isEmpty()) {
+            System.out.println("⚠️ No hay citas registradas.");
+        } else {
+            System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n", "ID", "Fecha", "Hora", "Paciente", "Doctor", "Estado");
+            System.out.println("-".repeat(100));
+
+            for (Cita cita : citas) {
+                System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n",
+                        cita.getId(),
+                        new SimpleDateFormat("yyyy-MM-dd").format(cita.getFecha()),
+                        cita.getHora(),
+                        cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
+                        cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(),
+                        cita.isLlego() ? "Asistido" : "No asistido");
+            }
+        }
 
         while (true) {
             try {
@@ -170,24 +188,51 @@ public class CitaController {
 
     public List<Cita> listarCitas() {
         System.out.println("\n--- Citas Registradas ---");
-        citas = dataPersistence.cargarCitas();
+        citas = dataPersistence.cargarCitas(); // Cargar citas desde el JSON
 
         if (citas.isEmpty()) {
             System.out.println("⚠️ No hay citas registradas.");
         } else {
-            System.out.printf("%-5s %-20s %-10s %-20s %-20s\n", "ID", "Fecha", "Hora", "Paciente", "Doctor");
-            System.out.println("-".repeat(70));
+            System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n", "ID", "Fecha", "Hora", "Paciente", "Doctor", "Estado");
+            System.out.println("-".repeat(100));
 
             for (Cita cita : citas) {
-                System.out.printf("%-5s %-20s %-10s %-20s %-20s\n",
+                System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n",
                         cita.getId(),
                         new SimpleDateFormat("yyyy-MM-dd").format(cita.getFecha()),
                         cita.getHora(),
                         cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
-                        cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido());
+                        cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(),
+                        cita.isLlego() ? "Asistido" : "No asistido");
             }
+
+            // Después de listar las citas, preguntar si se desea cambiar el estado de llegada
+            cambiarEstadoCita();
         }
         return citas;
+    }
+
+    private void cambiarEstadoCita() {
+        System.out.print("\n¿Desea cambiar el estado de llegada de alguna cita? (s/n): ");
+        String respuesta = scanner.nextLine();
+        if (respuesta.equalsIgnoreCase("s")) {
+            System.out.print("Ingrese el ID de la cita: ");
+            int citaId;
+            try {
+                citaId = Integer.parseInt(scanner.nextLine());
+                for (Cita cita : citas) {
+                    if (cita.getId() == citaId) {
+                        cita.setLlego(!cita.isLlego()); // Cambiar el estado
+                        dataPersistence.guardarCitas(citas); // Guardar cambios en el archivo
+                        System.out.println("✅ El estado de la cita ha sido actualizado.");
+                        return;
+                    }
+                }
+                System.out.println("❌ No se encontró una cita con ese ID.");
+            } catch (NumberFormatException e) {
+                System.out.println("❌ ID inválido. Debe ser un número.");
+            }
+        }
     }
 
     public void verCitasPorDoctor() {
@@ -207,13 +252,25 @@ public class CitaController {
             return;
         }
 
-        List<Cita> citas = citaService.getCitasByDoctor(codigoDoctor);
-        if (citas.isEmpty()) {
+        // Cargar las citas desde el JSON
+        citas = dataPersistence.cargarCitas();
+
+        List<Cita> citasDoctor = citaService.getCitasByDoctor(codigoDoctor);
+        if (citasDoctor.isEmpty()) {
             System.out.println("⚠️ No hay citas asignadas a este doctor.");
         } else {
             System.out.println("\n--- Citas del Doctor " + doctorEncontrado.getNombre() + " " + doctorEncontrado.getApellido() + " ---");
-            for (Cita cita : citas) {
-                System.out.println(cita);
+            System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n", "ID", "Fecha", "Hora", "Paciente", "Doctor", "Estado");
+            System.out.println("-".repeat(100));
+
+            for (Cita cita : citasDoctor) {
+                System.out.printf("%-5s %-20s %-10s %-20s %-20s %-10s\n",
+                        cita.getId(),
+                        new SimpleDateFormat("yyyy-MM-dd").format(cita.getFecha()),
+                        cita.getHora(),
+                        cita.getPaciente().getNombre() + " " + cita.getPaciente().getApellido(),
+                        cita.getDoctor().getNombre() + " " + cita.getDoctor().getApellido(),
+                        cita.isLlego() ? "Asistido" : "No asistido");
             }
         }
     }

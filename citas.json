@@ -1,26 +1,5 @@
 [
   {
-    "id": 0,
-    "fecha": "Jun 6, 2025, 12:00:00 AM",
-    "hora": "08:30 AM",
-    "paciente": {
-      "fechaNacimiento": "2008-03-05",
-      "nombre": "Elia",
-      "apellido": "Gome",
-      "dui": "00000000-0"
-    },
-    "doctor": {
-      "fechaReclutamiento": "2025-02-2",
-      "especialidad": "Oculista",
-      "codigo": "ZNH-9P8-MD-3J",
-      "nombre": "Jose",
-      "apellido": "Menjivar",
-      "dui": "12345678-9"
-    },
-    "especialidad": "Oculista",
-    "llego": false
-  },
-  {
     "id": 1,
     "fecha": "Jul 7, 2025, 12:00:00 AM",
     "hora": "03:00 PM",
@@ -60,6 +39,27 @@
       "dui": "98765432-1"
     },
     "especialidad": "Doctor",
+    "llego": false
+  },
+  {
+    "id": 3,
+    "fecha": "Jun 8, 2025, 12:00:00 AM",
+    "hora": "10:00 AM",
+    "paciente": {
+      "fechaNacimiento": "2002-09-05",
+      "nombre": "Josue",
+      "apellido": "Mejia",
+      "dui": "06050403-0"
+    },
+    "doctor": {
+      "fechaReclutamiento": "2022-03-08",
+      "especialidad": "Streamer",
+      "codigo": "ZNH-1P7-MD-3S",
+      "nombre": "Kelvin",
+      "apellido": "Rivas",
+      "dui": "12345678-3"
+    },
+    "especialidad": "Streamer",
     "llego": false
   }
 ]
